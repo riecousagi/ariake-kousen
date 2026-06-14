@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>有明高専 オープンキャンパス まとめ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap');
+
+  :root {
+    --navy:   #1a2a5e;
+    --blue:   #2563eb;
+    --sky:    #60a5fa;
+    --yellow: #fbbf24;
+    --green:  #22c55e;
+    --pink:   #f472b6;
+    --orange: #fb923c;
+    --light:  #f0f6ff;
+    --white:  #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'M PLUS Rounded 1c', 'Noto Sans JP', sans-serif;
+    background: #e8eef8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 10px 60px;
+    gap: 0;
+  }
+
+  /* ナビ */
+  .nav {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+    background: rgba(26,42,94,0.92);
+    border-radius: 50px;
+    padding: 10px 20px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+  }
+  .nav button {
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 8px 22px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .nav button:hover { background: var(--sky); }
+  .nav .page-indicator {
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    min-width: 60px;
+    justify-content: center;
+  }
+
+  /* スライド共通 */
+  .slide {
+    display: none;
+    width: 100%;
+    max-width: 860px;
+    min-height: 88vh;
+    border-radius: 24px;
+    padding: 48px 48px 40px;
+    box-shadow: 0 8px 40px rgba(26,42,94,0.18);
+    flex-direction: column;
+    gap: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .slide.active { display: flex; }
+
+  /* スライド番号バッジ */
+  .slide-badge {
+    position: absolute;
+    top: 20px;
+    right: 28px;
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 20px;
+    padding: 4px 14px;
+    letter-spacing: 0.05em;
+  }
+
+  /* タイトルスライド */
+  .slide-title {
+    background: linear-gradient(135deg, var(--navy) 0%, #2042a8 60%, #3b7af0 100%);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 20px;
+  }
+  .slide-title .big-emoji { font-size: 5rem; line-height: 1; }
+  .slide-title h1 {
+    color: var(--white);
+    font-size: 2.6rem;
+    font-weight: 900;
+    line-height: 1.2;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .slide-title .subtitle {
+    color: var(--sky);
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+  .slide-title .tagline {
+    color: rgba(255,255,255,0.85);
+    font-size: 1rem;
+    margin-top: 8px;
+    line-height: 1.7;
+  }
+
+  /* 通常スライドのヘッダー */
+  .slide-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .slide-header .icon {
+    font-size: 2.8rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .slide-header h2 {
+    font-size: 1.85rem;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.2;
+  }
+  .slide-header .label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 4px;
+  }
+
+  /* カード */
+  .card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 20px 24px;
+    box-shadow: 0 2px 12px rgba(26,42,94,0.08);
+  }
+  .card h3 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .card ul li {
+    font-size: 0.97rem;
+    color: #334155;
+    line-height: 1.55;
+    padding-left: 20px;
+    position: relative;
+  }
+  .card ul li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--blue);
+    font-size: 0.8rem;
+    top: 2px;
+  }
+
+  /* グリッド */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+  /* カラーカード（コース用） */
+  .course-card {
+    border-radius: 16px;
+    padding: 18px 20px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .course-card .c-icon { font-size: 2rem; }
+  .course-card .c-letter {
+    font-size: 1.5rem;
+    font-weight: 900;
+    opacity: 0.4;
+    line-height: 1;
+  }
+  .course-card .c-name {
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.3;
+  }
+  .course-card .c-desc {
+    font-size: 0.8rem;
+    opacity: 0.9;
+    line-height: 1.5;
+  }
+
+  /* ハイライトボックス */
+  .highlight {
+    background: linear-gradient(135deg, var(--navy), #2042a8);
+    color: #fff;
+    border-radius: 16px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .highlight .h-icon { font-size: 2.5rem; flex-shrink: 0; }
+  .highlight .h-text { font-size: 1rem; line-height: 1.6; }
+  .highlight .h-text strong { color: var(--yellow); }
+
+  /* 進路バー */
+  .ratio-bar {
+    background: #e2e8f0;
+    border-radius: 50px;
+    height: 40px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .ratio-bar .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), var(--sky));
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    color: #fff;
+    font-weight: 800;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+  .ratio-bar .bar-rest {
+    padding: 0 16px;
+    color: var(--navy);
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  /* タイムライン */
+  .timeline { display: flex; flex-direction: column; gap: 12px; }
+  .tl-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .tl-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .tl-content { flex: 1; }
+  .tl-content strong {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 3px;
+  }
+  .tl-content span {
+    font-size: 0.88rem;
+    color: #475569;
+    line-height: 1.5;
+  }
+
+  /* 警告バッジ */
+  .warn {
+    background: #fff7ed;
+    border: 2px solid var(--orange);
+    border-radius: 12px;
+    padding: 12px 18px;
+    font-size: 0.9rem;
+    color: #7c2d12;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-weight: 700;
+  }
+
+  /* ポイントバッジ */
+  .point-tag {
+    display: inline-block;
+    background: var(--yellow);
+    color: var(--navy);
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  /* 背景スライドカラー */
+  .bg-blue  { background: linear-gradient(160deg, #e8f0ff 0%, #f0f6ff 100%); }
+  .bg-green { background: linear-gradient(160deg, #e8fff0 0%, #f0fff8 100%); }
+  .bg-orange{ background: linear-gradient(160deg, #fff3e8 0%, #fff8f0 100%); }
+  .bg-pink  { background: linear-gradient(160deg, #ffe8f6 0%, #fff0fb 100%); }
+  .bg-purple{ background: linear-gradient(160deg, #f0e8ff 0%, #f8f0ff 100%); }
+
+  .divider {
+    height: 2px;
+    background: linear-gradient(90deg, var(--blue) 0%, transparent 100%);
+    border-radius: 2px;
+    opacity: 0.2;
+  }
+
+  /* レスポンシブ */
+  @media (max-width: 600px) {
+    .slide { padding: 28px 18px 80px; min-height: 92vh; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .slide-title h1 { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== スライド1: タイトル ===== -->
+<div class="slide slide-title active">
+  <div class="slide-badge">1 / 13</div>
+  <div class="big-emoji">🏫</div>
+  <h1>有明高専<br>オープンキャンパス<br>まとめ</h1>
+  <div class="subtitle">中学生向け かんたん解説</div>
+  <div class="tagline">
+    2025年 オープンキャンパス当日の内容をまとめました。<br>
+    受験を考えているみんな、ぜひ参考にしてね！
+  </div>
+</div>
+
+<!-- ===== スライド2: 学校概要 ===== -->
+<div class="slide bg-blue">
+  <div class="slide-badge">2 / 13</div>
+  <div class="slide-header">
+    <div class="icon">🏛️</div>
+    <div>
+      <div class="label">School Overview</div>
+      <h2>有明高専ってどんな学校？</h2>
+    </div>
+  </div>
+  <div class="card">
+    <h3>📌 基本情報</h3>
+    <ul>
+      <li>1963年（昭和38年）開校の <strong>国立高等専門学校</strong></li>
+      <li>大学と同じ「高等教育機関」なので、生徒ではなく<strong>「学生」</strong>と呼ばれる</li>
+      <li>卒業生はまもなく <strong>1万人</strong>に到達</li>
+      <li>博士号を持つ研究者の先生から専門知識を学べる</li>
+    </ul>
+  </div>
+  <div class="highlight">
+    <div class="h-icon">💡</div>
+    <div class="h-text">
+      高専は<strong>5年間</strong>で大学レベルの専門知識を学べる学校！<br>
+      普通の高校とは全然ちがう「早期エンジニア育成」の学校です。
+    </div>
+  </div>
+  <div class="card">
+    <h3>🌍 国際性もあり！</h3>
+    <ul>
+      <li>シンガポール・スウェーデン・ベトナムの学校と連携</li>
+      <li>地元自治体・産業界とも共同で研究・教育</li>
+      <li>高専という教育制度は海外でも導入されている</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== スライド3: コース制度 ===== -->
+<div class="slide bg-green">
+  <div class="slide-badge">3 / 13</div>
+  <div class="slide-header">
+    <div class="icon">🎓</div>
+    <div>
+      <div class="label">Course System</div>
+      <h2>6コース制度のしくみ</h2>
+    </div>
+  </div>
+  <div class="highlight">
+    <div class="h-icon">✅</div>
+    <div class="h-text">
+      入学時はコースを決めなくてOK！<br>
+      <strong>「創造工学科」</strong>として全員いっしょにスタートします。
+    </div>
+  </div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot">1年</div>
+      <div class="tl-content">
+        <strong>全コースの基礎を学ぶ</strong>
+        <span>6コースの先生が授業に来てくれる。どんな専門があるかを体験しながら探せる。</span>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot">2年<br>前期</div>
+      <div class="tl-content">
+        <strong>引き続きコースを見極め中</strong>
+        <span>先輩に話を聞いたり、見学したりしながら自分に合ったコースを探す。</span>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot">2年<br>後期</div>
+      <div class="tl-content">
+        <strong>🎯 コースに所属スタート！</strong>
+        <span>ここから本格的に専門コースで勉強が始まる。</span>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot">5年</div>
+      <div class="tl-content">
+        <strong>卒業研究 ＆ 就職・進学</strong>
+        <span>研究室で本格的な研究活動。大学院レベルの学びも可能。</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== スライド4: 6コース紹介 ===== -->
+<div class="slide bg-blue">
+  <div class="slide-badge">4 / 13</div>
+  <div class="slide-header">
+    <div class="icon">🔬</div>
+    <div>
+      <div class="label">6 Courses</div>
+      <h2>6つのコース一覧</h2>
+    </div>
+  </div>
+  <div class="grid-3">
+    <div class="course-card" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">
+      <div class="c-letter">E</div>
+      <div class="c-icon">⚡</div>
+      <div class="c-name">エネルギーコース</div>
+      <div class="c-desc">電気・電子・情報工学。求人が多く就職に強い！</div>
+    </div>
+    <div class="course-card" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
+      <div class="c-letter">A</div>
+      <div class="c-icon">🧪</div>
+      <div class="c-name">応用化学コース</div>
+      <div class="c-desc">素材開発・化学反応・新材料の研究</div>
+    </div>
+    <div class="course-card" style="background: linear-gradient(135deg, #10b981, #34d399);">
+      <div class="c-letter">C</div>
+      <div class="c-icon">🌿</div>
+      <div class="c-name">環境生命コース</div>
+      <div class="c-desc">生物・環境・細胞・医療への応用</div>
+    </div>
+    <div class="course-card" style="background: linear-gradient(135deg, #ef4444, #f87171);">
+      <div class="c-letter">M</div>
+      <div class="c-icon">🔧</div>
+      <div class="c-name">メカニクスコース</div>
+      <div class="c-desc">溶接・鋳造・機械加工・ものづくり</div>
+    </div>
+    <div class="course-card" style="background: linear-gradient(135deg, #2563eb, #60a5fa);">
+      <div class="c-letter">I</div>
+      <div class="c-icon">💻</div>
+      <div class="c-name">情報システムコース</div>
+      <div class="c-desc">プログラミング・AI・ハードウェア</div>
+    </div>
+    <div class="course-card" style="background: linear-gradient(135deg, #0891b2, #22d3ee);">
+      <div class="c-letter">建</div>
+      <div class="c-icon">🏗️</div>
+      <div class="c-name">建築コース</div>
+      <div class="c-desc">設計・デザイン・建築技術</div>
+    </div>
+  </div>
+  <div class="warn">
+    <span>💡</span>
+    入学時にコースを選ぶ必要なし！ 1年半かけてゆっくり決められます。
+  </div>
+</div>
+
+<!-- ===== スライド5: 授業・勉強 ===== -->
+<div class="slide bg-orange">
+  <div class="slide-badge">5 / 13</div>
+  <div class="slide-header">
+    <div class="icon">📚</div>
+    <div>
+      <div class="label">Classes</div>
+      <h2>授業・勉強について</h2>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>⏰ 授業のしくみ</h3>
+      <ul>
+        <li>1コマ <strong>90分</strong>（中学は50分）</li>
+        <li>3コマの日は <strong>2時半に終了</strong>！早帰りも◎</li>
+        <li>英語・数学などの普通科目＋専門科目（工学基礎など）</li>
+        <li>1年生から6コースの先生が専門授業を担当</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🧫 実験・実習が多い！</h3>
+      <ul>
+        <li>実験・実習に<strong>かなりの時間</strong>を割いている</li>
+        <li>自分で機械を動かしたりプログラムを書く実習がたくさん</li>
+        <li>3年生以降は本格的な実験室が使える</li>
+        <li>5年生では研究室で自分のテーマを研究</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card">
+    <h3>📝 テスト・成績について</h3>
+    <ul>
+      <li>前期・後期それぞれ<strong>2回ずつ</strong>テストあり</li>
+      <li>⚠️ 赤点ラインが<strong>60点</strong>（一般高校より高め！）</li>
+      <li>先輩いわく「有明高専は九州の高専の中で一番難しい」との声も</li>
+    </ul>
+  </div>
+  <div class="highlight">
+    <div class="h-icon">😊</div>
+    <div class="h-text">
+      「思ったよりゆるくて楽しい！」「個性豊かな先生・生徒で毎日が楽しい」<br>という<strong>先輩の声</strong>も多数でした。
+    </div>
+  </div>
+</div>
+
+<!-- ===== スライド6: 学校生活・イベント ===== -->
+<div class="slide bg-pink">
+  <div class="slide-badge">6 / 13</div>
+  <div class="slide-header">
+    <div class="icon">🎉</div>
+    <div>
+      <div class="label">School Life</div>
+      <h2>学校生活・イベント</h2>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>🎊 アリターンフェスタ</h3>
+      <ul>
+        <li>体育祭＋文化祭が<strong>合体した大イベント</strong></li>
+        <li>バンド演奏・演舞など盛りだくさん</li>
+        <li>先輩のかっこいい演舞が見どころ！</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🏅 クラスマッチ</h3>
+      <ul>
+        <li>全学年対抗スポーツ大会</li>
+        <li>eスポーツ・スマブラなども種目に</li>
+        <li>「2年生の先輩にボコボコにされた」という1年生の証言あり😂</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>✈️ シンガポール研修</h3>
+      <ul>
+        <li>2年生の夏休みに<strong>3泊5日</strong>で海外へ！</li>
+        <li>「普通高校は東京、高専は海外！」と自慢できる</li>
+        <li>先輩いわく「めっちゃ楽しい！」</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>☀️ 夏休み</h3>
+      <ul>
+        <li>8月初め〜10月初めまで<strong>約2ヶ月</strong>の超長い夏休み</li>
+        <li>「長くて楽しみだけど他校の友達と予定が合わない」との声も</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card">
+    <h3>🏆 コンテスト・高専大会</h3>
+    <ul>
+      <li>プログラミングコンテストなど各種コンテストが充実</li>
+      <li>一般高校の大会とは別に「<strong>高専大会</strong>」があり、全国の高専と競える</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== スライド7: 部活動 ===== -->
+<div class="slide bg-blue">
+  <div class="slide-badge">7 / 13</div>
+  <div class="slide-header">
+    <div class="icon">🏃</div>
+    <div>
+      <div class="label">Club Activities</div>
+      <h2>部活動</h2>
+    </div>
+  </div>
+  <div class="card">
+    <h3>🎽 体育系・文化系ともに充実</h3>
+    <ul>
+      <li>バドミントン・吹奏楽など一般的な部活のほか…</li>
+      <li>⭐ <strong>自動車工学研究部・ロボット研究部</strong>など高専ならではの部活が人気</li>
+      <li>フォークソング部など文化系も豊富</li>
+    </ul>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>🤝 縦のつながりが強い！</h3>
+      <ul>
+        <li>1年生から5年生まで同じ部活で活動</li>
+        <li>先輩から<strong>過去問をもらえたり</strong>、勉強も教えてもらえる</li>
+        <li>定期テストの情報共有も◎</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🎺 吹奏楽部の特徴</h3>
+      <ul>
+        <li>部員が多く、様々な楽器に挑戦できる</li>
+        <li>定期演奏会あり</li>
+        <li>中学で触れなかった楽器にチャレンジするチャンス！</li>
+      </ul>
+    </div>
+  </div>
+  <div class="highlight">
+    <div class="h-icon">🏆</div>
+    <div class="h-text">
+      <strong>高専大会</strong>という全国の高専が集まる大会があり、<br>一般の高校大会とは別に戦える舞台がある！
+    </div>
+  </div>
+</div>
+
+<!-- ===== スライド8: 寮生活 ===== -->
+<div class="slide bg-purple">
+  <div class="slide-badge">8 / 13</div>
+  <div class="slide-header">
+    <div class="icon">🏠</div>
+    <div>
+      <div class="label">Dormitory Life</div>
+      <h2>寮生活について</h2>
+    </div>
+  </div>
+  <div class="highlight">
+    <div class="h-icon">👥</div>
+    <div class="h-text">寮生数：約<strong>260名</strong>（全学生の約<strong>1/4</strong>）<br>個人部屋あり！共有スペースで友達と過ごせます。</div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>🍱 食事</h3>
+      <ul>
+        <li>朝：<strong>バイキング</strong></li>
+        <li>昼：お弁当</li>
+        <li>夜：食堂で主菜を選べる</li>
+        <li>イベント時は豪華メニューも！</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>📖 生活リズム</h3>
+      <ul>
+        <li>毎日夜に<strong>1時間半の自習時間</strong>あり</li>
+        <li>寮→学校は徒歩約10分（坂道あり）</li>
+        <li>朝夕点呼あり、規則正しい生活</li>
+      </ul>
+    </div>
+  </div>
+  <div class="warn">
+    <span>📶</span>
+    ソフトバンクの電波が弱め。Wi-Fiはあるが、たまに切れることも。
+  </div>
+  <div class="card">
+    <h3>💬 寮生の声</h3>
+    <ul>
+      <li>「テスト期間は共有スペースで友達と一緒に勉強できる」</li>
+      <li>「女子寮にはウォークインクローゼットあり」</li>
+      <li>「バイトは寮生は基本的に難しい」</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== スライド9: 進路 ===== -->
+<div class="slide bg-green">
+  <div class="slide-badge">9 / 13</div>
+  <div class="slide-header">
+    <div class="icon">🚀</div>
+    <div>
+      <div class="label">Career Paths</div>
+      <h2>卒業後の進路</h2>
+    </div>
+  </div>
+  <div class="card">
+    <h3>📊 進路の割合（全体）</h3>
+    <div style="margin-top:12px; display:flex; flex-direction:column; gap:10px;">
+      <div>
+        <div style="font-size:0.85rem;color:#475569;margin-bottom:4px;">就職（約7割）</div>
+        <div class="ratio-bar">
+          <div class="bar-fill" style="width:70%">就職 70%</div>
+          <div class="bar-rest">進学 30%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>💼 就職</h3>
+      <ul>
+        <li>大手〜専門メーカーまで幅広い求人</li>
+        <li>エネルギーコースは特に求人が豊富</li>
+        <li>産業界からの評価が非常に高い</li>
+        <li>情報コースは700社以上の求人</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🎓 進学（約3割）</h3>
+      <ul>
+        <li>4年制大学の<strong>3年次に編入</strong>できる</li>
+        <li>専攻科（高専内の2年制課程）への進学も</li>
+        <li>国立・有名大学への編入実績あり</li>
+      </ul>
+    </div>
+  </div>
+  <div class="highlight">
+    <div class="h-icon">⭐</div>
+    <div class="h-text">
+      高専卒業生は「即戦力」として企業から大人気！<br>
+      <strong>就職困難になることはほぼない</strong>と言われています。
+    </div>
+  </div>
+</div>
+
+<!-- ===== スライド10: 在校生の声 ===== -->
+<div class="slide bg-orange">
+  <div class="slide-badge">10 / 13</div>
+  <div class="slide-header">
+    <div class="icon">💬</div>
+    <div>
+      <div class="label">Student Voice</div>
+      <h2>在校生の声</h2>
+    </div>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:14px;">
+    <div class="card">
+      <div class="point-tag">😊 よかったこと</div>
+      <ul>
+        <li>「1年生から部活に入って5年生の先輩とつながれた。過去問ももらえる！」</li>
+        <li>「個性豊かすぎる先生と生徒が面白くて、毎日楽しい」</li>
+        <li>「勉強・部活・学校生活を両立させられて充実している」</li>
+        <li>「就職に強い、高専に来てよかった」</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="point-tag">😅 ちょっと大変なこと</div>
+      <ul>
+        <li>「赤点が60点で高い！みんな必死に勉強する」</li>
+        <li>「夏休みが長すぎて他校の友達と遊べない😂」</li>
+        <li>「1年生の間は実験より図学（製図）が多かった」</li>
+        <li>「高専に行ってると言うと『頭いいね』と言われてちょっとプレッシャー」</li>
+      </ul>
+    </div>
+    <div class="highlight">
+      <div class="h-icon">🌟</div>
+      <div class="h-text">
+        総合的には「<strong>楽しい・充実している</strong>」という声が多数！<br>
+        ゆるすぎず厳しすぎない、ちょうどいい環境という印象です。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== スライド11: 入試について ===== -->
+<div class="slide bg-blue">
+  <div class="slide-badge">11 / 13</div>
+  <div class="slide-header">
+    <div class="icon">📝</div>
+    <div>
+      <div class="label">Entrance Exam</div>
+      <h2>入試について</h2>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>🏫 推薦入試</h3>
+      <ul>
+        <li>面接あり</li>
+        <li>志望動機・高専への熱意が大切</li>
+        <li>学校の成績も重要</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>📄 一般入試</h3>
+      <ul>
+        <li><strong>面接なし</strong>（筆記のみ）</li>
+        <li>マークシート式</li>
+        <li>とにかく<strong>全問埋めること</strong>が大事！</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card">
+    <h3>💡 面接対策（推薦向け）</h3>
+    <ul>
+      <li><strong>笑顔でハキハキ</strong>と答えることが最重要</li>
+      <li>聞かれること例：<br>
+        → 理科の実験で<strong>印象に残っていること</strong><br>
+        → オープンキャンパスで<strong>興味を持った機械の名前</strong>
+      </li>
+      <li>落ち着いてしっかり喋ることが大事（先輩談）</li>
+      <li>推薦で落ちても一般入試で再チャレンジできる！</li>
+    </ul>
+  </div>
+  <div class="warn">
+    <span>📌</span>
+    オープンキャンパスで見た機械や実験の名前を覚えておくと面接で使えます！
+  </div>
+</div>
+
+<!-- ===== スライド12: 今後の説明会 ===== -->
+<div class="slide bg-green">
+  <div class="slide-badge">12 / 13</div>
+  <div class="slide-header">
+    <div class="icon">📅</div>
+    <div>
+      <div class="label">Next Events</div>
+      <h2>今後の説明会・イベント</h2>
+    </div>
+  </div>
+  <div class="card">
+    <h3>🖥️ オンライン説明会</h3>
+    <ul>
+      <li><strong>7月4日</strong>：オンラインで入試・学校詳細の説明会</li>
+      <li>自宅から参加できる！</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>🏫 対面説明会</h3>
+    <ul>
+      <li>有明高専での対面説明会も予定あり</li>
+      <li>久留米シティプラザなどでも開催予定</li>
+      <li>入試の詳しい説明を聞けるチャンス！</li>
+    </ul>
+  </div>
+  <div class="highlight">
+    <div class="h-icon">🔍</div>
+    <div class="h-text">
+      オープンキャンパスだけでなく、<strong>入試説明会にもぜひ参加</strong>しよう！<br>
+      詳細は有明高専の公式サイトをチェック。
+    </div>
+  </div>
+  <div class="card">
+    <h3>💬 個別相談</h3>
+    <ul>
+      <li>オープンキャンパス後にイノベーションカフェ（食堂）で個別相談あり</li>
+      <li>学生生活・入試・寮生活、それぞれの担当教員と学生に質問できる</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== スライド13: まとめ ===== -->
+<div class="slide slide-title">
+  <div class="slide-badge">13 / 13</div>
+  <div class="big-emoji">🎯</div>
+  <h1>有明高専で<br>未来のエンジニアを<br>目指そう！</h1>
+  <div style="background:rgba(255,255,255,0.15); border-radius:16px; padding:20px 24px; text-align:left; display:flex; flex-direction:column; gap:10px;">
+    <div style="color:#fff; font-size:1rem; line-height:1.8;">
+      ✅ 入学時にコースを選ばなくていい<br>
+      ✅ 実験・実習が充実している<br>
+      ✅ 就職・進学どちらも強い<br>
+      ✅ 先輩とのつながりが深い<br>
+      ✅ 海外研修やコンテストなど体験も豊富
+    </div>
+  </div>
+  <div style="color:rgba(255,255,255,0.75); font-size:0.95rem; margin-top:8px;">
+    気になることは先生や先輩に直接聞いてみよう！
+  </div>
+</div>
+
+<!-- ナビゲーション -->
+<div class="nav">
+  <button onclick="changeSlide(-1)">◀ 前へ</button>
+  <div class="page-indicator" id="pageIndicator">1 / 13</div>
+  <button onclick="changeSlide(1)">次へ ▶</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+
+  function changeSlide(dir) {
+    slides[current].classList.remove('active');
+    current = (current + dir + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    document.getElementById('pageIndicator').textContent = `${current + 1} / ${slides.length}`;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') changeSlide(-1);
+  });
+
+  // タッチスワイプ対応
+  let startX = 0;
+  document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1);
+  });
+</script>
+</body>
+</html>
